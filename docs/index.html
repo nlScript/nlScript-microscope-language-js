@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href='https://fonts.googleapis.com/css?family=Caveat' rel='stylesheet'>
+    <link href='timeline.css' rel='stylesheet'>
+<style>
+:root {
+  --banner-color: #183d3d;
+  --banner-margin: 20px;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  font-family: 'Caveat';
+  font-size: 40;
+  background-color: var(--banner-color);
+  color: white;
+  padding: 40px;
+  margin-top: var(--banner-margin);
+  margin-bottom: var(--banner-margin);
+}
+
+ul {
+  line-height: 2;
+}
+
+code {
+  background-color: #dfebfc;
+  padding: 1px;
+  border-radius: 3px;
+}
+#nls-container {
+    /* border: 1px solid gray; */
+    width: 100%;
+    /* height: 500px; */
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#footer {
+  color: #aeaeae;
+  font-size: small;
+  border-top: #aeaeae solid 1px;
+  text-align: center;
+  margin-top: 30px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+</style>
+</head>
+<body>
+  <script src="../dist/umd/nlScript-microscope-language.js"></script>
+
+  <h1>Natural Language-based microscope setup using nlScript</h1>
+
+  <p>This site demonstrates an approach to configure microscope imaging experiments with a natural language scripting interface. It is based on <a href="https://nlScript.github.io/nlScript-java">nlScript</a></p>
+
+  <i>Instructions</i>
+  <ul>
+    <li>Hit <code>Ctrl</code>-<code>Space</code> to trigger auto-completion</li>
+    <li>Define the required channels (<code>Define channel...</code>)</li>
+    <li>Define one or more positions (<code>Define position...</code>)</li> 
+    <li>Configure a timelapse (<code>At...</code>, <code>After...</code>)</li>
+  </ul>
+
+  <p>
+	  <label for="presets">Or choose a sample script:</label>
+	  <select name="presets" id="presets" onchange="presetChanged()">
+		  <option>Basic example</option>
+		  <option>Two channels at different intervals</option>
+		  <option>Consecutive time-lapses with different intervals</option>
+		  <option>Overview and detail scans at different intervals</option>
+		  <option>Change incubation</option>
+		  <option>Adjust laser power during a time-lapse</option>
+	  </select>
+  </p>
+
+  <div id="nls-container"></div>
+
+  <div id="footer">Benjamin Schmid, Optical Imaging Centre Erlangen</div>
+
+  <div id="timeline" class="hidden">
+    <div id="timeline-close">&laquo;</div>
+    <div class="rightbox">
+      <div class="rb-container">
+        <ul id="events" class="rb">
+          
+          <li class="rb-item" ng-repeat="itembx">
+            <div class="timestamp">
+              3rd May 2020 19:00
+            </div>
+            <div class="item-title">No event yet.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+
+let script1 = `
+Define channel 'DAPI':
+  excite with 30% at 385nm
+  use an exposure time of 100ms.
+
+Define channel 'GFP':
+  excite with 30% at 470nm
+  use an exposure time of 100ms.
+
+Define a position 'Pos1':
+  300 x 300 x 20 microns
+  centered at (34000, 34000, 5000) microns.
+
+At the beginning, acquire...
+  every 5 second(s) for 1 minute(s)
+  all positions
+  channel(s) 'DAPI'
+  with a plane distance of 5 microns
+  using the 20x lens with the 1.0x magnification changer and a binning of 1 x 1.
+`.trim();
+
+let script2 = `
+Define channel 'DAPI':
+  excite with 30% at 385nm
+  use an exposure time of 100ms.
+
+Define channel 'GFP':
+  excite with 30% at 470nm
+  use an exposure time of 100ms.
+
+Define a position 'Pos1':
+  300 x 300 x 20 microns
+  centered at (34000, 34000, 5000) microns.
+
+At the beginning, acquire...
+  every 5 second(s) for 1 minute(s)
+  all positions
+  channel(s) 'DAPI'
+  with a plane distance of 5 microns
+  using the 20x lens with the 1.0x magnification changer and a binning of 1 x 1.
+
+At the beginning, acquire...
+  every 20 second(s) for 1 minute(s)
+  all positions
+  channel(s) 'GFP'
+  with a plane distance of 5 microns
+  using the 20x lens with the 1.0x magnification changer and a binning of 1 x 1.
+`.trim();
+
+let script3 = `
+Define channel 'DAPI':
+  excite with 30% at 385nm
+  use an exposure time of 100ms.
+
+Define a position 'Pos1':
+  300 x 300 x 20 microns
+  centered at (34000, 34000, 5000) microns.
+
+At the beginning, acquire...
+  every 5 second(s) for 1 minute(s)
+  all positions
+  channel(s) 'DAPI'
+  with a plane distance of 5 microns
+  using the 20x lens with the 1.0x magnification changer and a binning of 1 x 1.
+
+After 1 minute(s), acquire...
+  every 20 second(s) for 1 minute(s)
+  all positions
+  channel(s) 'DAPI'
+  with a plane distance of 5 microns
+  using the 20x lens with the 1.0x magnification changer and a binning of 1 x 1.
+`.trim();
+
+let script4 = `
+Define channel 'DAPI':
+  excite with 30% at 385nm
+  use an exposure time of 100ms.
+
+Define a position 'Overview':
+  500 x 500 x 20 microns
+  centered at (34000, 34000, 5000) microns.
+
+Define a position 'Pos1':
+  100 x 100 x 100 microns
+  centered at (33850, 34010, 5000) microns.
+
+Define a position 'Pos2':
+  100 x 100 x 100 microns
+  centered at (34050, 33980, 5000) microns.
+
+Define a position 'Pos3':
+  100 x 100 x 100 microns
+  centered at (34090, 34020, 5000) microns.
+
+At the beginning, acquire...
+  every 1 minute(s) for 2 minute(s)
+  position(s) 'Overview'
+  all channels
+  with a plane distance of 5 microns
+  using the 5x lens with the 0.5x magnification changer and a binning of 1 x 1.
+
+At the beginning, acquire...
+  every 20 second(s) for 2 minute(s)
+  position(s) 'Pos1', 'Pos2', 'Pos3'
+  all channels
+  with a plane distance of 5 microns
+  using the 20x lens with the 2.0x magnification changer and a binning of 1 x 1.
+`.trim();
+
+let script5 = `
+Define channel 'DAPI':
+  excite with 30% at 385nm
+  use an exposure time of 100ms.
+
+Define a position 'Pos1':
+  500 x 500 x 20 microns
+  centered at (34000, 34000, 5000) microns.
+
+At the beginning, acquire...
+  every 10 second(s) for 1 minute(s)
+  all positions
+  all channels
+  with a plane distance of 5 microns
+  using the 5x lens with the 0.5x magnification changer and a binning of 1 x 1.
+
+After 30 second(s), adjust...
+  once
+  the temperature to 10\u00B0C.
+`.trim();
+
+let script6 = `
+Define channel 'DAPI':
+  excite with 30% at 385nm
+  use an exposure time of 100ms.
+
+Define a position 'Pos1':
+  500 x 500 x 20 microns
+  centered at (34000, 34000, 5000) microns.
+
+At the beginning, adjust...
+  every 10 second(s) for 1 minute(s)
+  the power of the 385nm led of channel 'DAPI' to 100%.
+
+At the beginning, acquire...
+  every 10 second(s) for 1 minute(s)
+  all positions
+  all channels
+  with a plane distance of 5 microns
+  using the 5x lens with the 0.5x magnification changer and a binning of 1 x 1.
+`.trim();
+
+let lc = new nlScript.LanguageControl();
+let parser = lc.initParser();
+
+let autocompletions = [];
+// parser.parse("My favourite color is ", autocompletions);
+// console.debug("autocompletions = " + autocompletions);
+
+const editor = new nlScript.ACEditor(parser, document.getElementById("nls-container"));
+
+editor.setBeforeRun(() => {
+  lc.reset();
+  document.getElementById("events").innerHTML = "";
+});
+editor.setAfterRun(() => {
+  lc.getTimeline().process((entry) => entry());
+});
+
+lc.getMicroscope().setOnAcquire((position, channel) => {
+  console.log("Move stage to position " + position);
+  console.log("Apply channel settings:");
+  console.log("  - set camera exposure time to " + channel.exposureTime);
+  for(const led of nlScript.LEDs) {
+      const ledSetting = channel.getLEDSetting(led);
+      if(ledSetting === undefined)
+          console.log("  - switch LED " + led.WAVELENGTH + " off");
+      else
+          console.log("  - set LED " + led.WAVELENGTH + " to " + ledSetting.intensity + "%");
+  }
+  console.log("Acquire stack");
+
+  showTimeline();
+
+  let microscope = lc.getMicroscope();
+
+  let innerHTML = '';
+  innerHTML += '<li class="rb-item" ng-repeat="itembx">';
+  innerHTML += '  <div class="timestamp">';
+  innerHTML += new Date().toLocaleString('en-us', {year: 'numeric', month: 'short', day: 'numeric', hour12:false, hour:'numeric', minute:'numeric', second:'numeric'});
+  innerHTML += '  </div>';
+  innerHTML += '  <div class="item-title">';
+
+  innerHTML += 'Stage position: ' + position.name + '<br>';
+  innerHTML += '<ul>';
+  innerHTML += '<li>' + position.center.toString() + '</li>';
+  innerHTML += '</ul>';
+
+  innerHTML += 'Channel settings: ' + channel.name + ':<br>';
+  innerHTML += '<ul>'
+  innerHTML += '<li>Exposure time: ' + channel.exposureTime + 'ms</li>';
+  for(const led of nlScript.LEDs) {
+    const ledSetting = channel.getLEDSetting(led);
+    if(ledSetting !== undefined)
+      innerHTML += '<li>LED ' + led.WAVELENGTH + ': ' + ledSetting.intensity + '%</li>';
+  }
+  innerHTML += '</ul>';
+
+  innerHTML += 'Optics:<br>';
+  innerHTML += '<ul>';
+  innerHTML += '<li>Lens: ' + microscope.lens + '</li>';
+  innerHTML += '<li>Mag.Changer: ' + microscope.magnificationChanger + '</li>';
+  innerHTML += '<li>Binning: ' + microscope.binning + '</li>';
+  innerHTML += '</ul>';
+
+  innerHTML += 'Incubation:<br>';
+  innerHTML += '<ul>';
+  innerHTML += '<li>Temperature: ' + microscope.getTemperature() + '&deg;C</li>';
+  innerHTML += '<li>CO2 concentration: ' + microscope.getCO2Concentration() + '%</li>';
+  innerHTML += '</ul>';
+
+  innerHTML += 'Acquire<br>';
+  innerHTML += '  </div>';
+  innerHTML += '</li>';
+  let element = document.getElementById("events");
+  element.innerHTML += innerHTML;
+  element.lastChild.scrollIntoView({behavior: 'smooth'});
+});
+
+let closeButton = document.getElementById("timeline-close");
+let timelinePanel = document.getElementById("timeline");
+
+function toggleTimeline() {
+  if(timelinePanel.classList.contains("hidden")) {
+    timelinePanel.classList.remove("hidden");
+    closeButton.textContent = "\u00BB";
+  }
+  else {
+    timelinePanel.classList.add("hidden");
+    closeButton.textContent = "\u00AB";
+  }
+}
+
+function showTimeline() {
+  if(timelinePanel.classList.contains("hidden")) {
+    timelinePanel.classList.remove("hidden");
+    closeButton.textContent = "\u00BB";
+  }
+}
+
+function hideTimeline() {
+  if(!timeline.classList.contains("hidden")) {
+    timelinePanel.classList.add("hidden");
+    closeButton.textContent = "\u00AB";
+  }
+}
+
+closeButton.addEventListener("click", () => {
+  toggleTimeline();
+});
+
+
+document.getElementById("presets").selectedIndex = 0;
+editor.setText(script1);
+
+function presetChanged() {
+  console.log("preset changed");
+  console.log(document.getElementById("presets").selectedIndex);
+  let selIdx = document.getElementById("presets").selectedIndex;
+  switch(selIdx) {
+    case 0: editor.setText(script1); break;
+    case 1: editor.setText(script2); break;
+    case 2: editor.setText(script3); break;
+    case 3: editor.setText(script4); break;
+    case 4: editor.setText(script5); break;
+    case 5: editor.setText(script6); break;
+  }
+}
+
+
+
+</script>
+</body>
+</html>

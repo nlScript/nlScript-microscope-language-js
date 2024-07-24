@@ -1,0 +1,40 @@
+{
+  "name": "@nlscript/nlScript-microscope-js",
+  "version": "0.1.0",
+  "description": "Use nlScript to develop a language based on natural English syntax to control microscope acquisition pipelines",
+  "main": "dist/index.cjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nlScript/nlScript-microscope-language-js.git"
+  },
+  "keywords": [
+    "natural language",
+    "scripting",
+    "user interface",
+    "microscope"
+  ],
+  "author": "Benjamin Schmid",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nlScript/nlScript-microscope-language-js/issues"
+  },
+  "homepage": "https://github.com/nlScript/nlScript-microscope-language-js#readme",
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.4",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "files": [
+    "README.md",
+    "package.json",
+    "./dist/",
+    "./src/"
+  ],
+  "dependencies": {
+    "@nlscript/nlScript-js": "file:../nlScript-js"
+  }
+}
