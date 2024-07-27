@@ -31,7 +31,7 @@ module.exports = {
       type: 'umd'
     },
     globalObject: 'this',
-    path: path.resolve(__dirname, 'docs/'),
+    path: path.resolve(__dirname, 'dist/umd/'),
   }
 };
 
