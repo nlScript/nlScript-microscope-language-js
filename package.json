@@ -36,6 +36,6 @@
     "./src/"
   ],
   "dependencies": {
-    "@nlscript/nlScript-js": "file:../nlScript-js"
+    "@nlscript/nlscript": "^0.1.0"
   }
 }

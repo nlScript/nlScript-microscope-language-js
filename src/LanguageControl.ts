@@ -1,6 +1,6 @@
-import { Parser } from "@nlscript/nlScript-js";
-import { Autocompletion } from '@nlscript/nlScript-js';
-import { IfNothingYetEnteredAutocompleter } from '@nlscript/nlScript-js';
+import { Parser } from "@nlscript/nlscript";
+import { Autocompletion } from '@nlscript/nlscript';
+import { IfNothingYetEnteredAutocompleter } from '@nlscript/nlscript';
 import { ALL_CHANNELS, ALL_POSITIONS, Binning, Channel, LED, LEDSetting, LEDs, Lens, MagnificationChanger, Microscope, Position } from './Microscope.js';
 import { Timeline } from './Timeline.js';
 import { Interpolator } from './Interpolator.js';
