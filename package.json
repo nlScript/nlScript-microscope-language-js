@@ -1,5 +1,5 @@
 {
-  "name": "@nlscript/nlScript-microscope-js",
+  "name": "@nlscript/nlscript-microscope-language",
   "version": "0.1.0",
   "description": "Use nlScript to develop a language based on natural English syntax to control microscope acquisition pipelines",
   "main": "dist/index.cjs",
