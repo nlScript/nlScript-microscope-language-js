@@ -4,6 +4,7 @@
   "description": "Use nlScript to develop a language based on natural English syntax to control microscope acquisition pipelines",
   "main": "dist/index.cjs",
   "scripts": {
+    "build": "npx webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
