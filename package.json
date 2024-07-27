@@ -2,7 +2,7 @@
   "name": "@nlscript/nlscript-microscope-language",
   "version": "0.1.0",
   "description": "Use nlScript to develop a language based on natural English syntax to control microscope acquisition pipelines",
-  "main": "dist/index.cjs",
+  "main": "dist/umd/nlScript-microscope-language.js",
   "scripts": {
     "build": "npx webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
