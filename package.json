@@ -1,6 +1,6 @@
 {
   "name": "@nlscript/nlscript-microscope-language",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Use nlScript to develop a language based on natural English syntax to control microscope acquisition pipelines",
   "main": "dist/umd/nlScript-microscope-language.js",
   "scripts": {
